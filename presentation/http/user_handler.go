@@ -1,11 +1,11 @@
 package http
 
-
 import (
-	"net/http"
 	"encoding/json"
+	"net/http"
+	"errors"
+	"fmt"
 	"github.com/alireza/identity/application"
-
 )
 
 
@@ -34,8 +34,15 @@ func (h *UserHandler) Register(w http.ResponseWriter , r *http.Request){
 		return
 	}
 	err := h.services.Register(req.Name , req.Password)
+	fmt.Println("DEBUG:", err)
 	if err != nil{
-		http.Error(w , "could not Register", http.StatusInternalServerError)
+		switch {
+		case errors.Is(err , application.ErrUserAlreadyExists):
+			http.Error(w , "User Already Exists " , http.StatusConflict)
+		default:
+			http.Error(w, "Internal Server Error " , http.StatusInternalServerError)
+		}
+	
 		
 	}
 }
