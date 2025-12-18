@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"errors"
-	"fmt"
 	"github.com/alireza/identity/application"
 )
 
@@ -33,16 +32,34 @@ func (h *UserHandler) Register(w http.ResponseWriter , r *http.Request){
 		http.Error(w, "Invalid json" , http.StatusBadRequest)
 		return
 	}
-	err := h.services.Register(req.Name , req.Password)
-	fmt.Println("DEBUG:", err)
+	
+	err :=  h.services.Register(req.Name , req.Password)
 	if err != nil{
 		switch {
 		case errors.Is(err , application.ErrUserAlreadyExists):
-			http.Error(w , "User Already Exists " , http.StatusConflict)
+			Response:= NewRegistrationResponse(false , "User Already Exists" , "")
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusCreated)
+			if err := json.NewEncoder(w).Encode(Response); err != nil {
+        http.Error(w, "Server Problem", http.StatusInternalServerError)
+    }
+
 		default:
 			http.Error(w, "Internal Server Error " , http.StatusInternalServerError)
 		}
 	
 		
+	}else{
+
+		Response := NewRegistrationResponse(true, "User Registered Successfully", "")
+
+    
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(http.StatusCreated)
+
+    if err := json.NewEncoder(w).Encode(Response); err != nil {
+        http.Error(w, "Server Problem", http.StatusInternalServerError)
+    }
+
 	}
 }

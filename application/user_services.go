@@ -18,7 +18,7 @@ func NewUserService(repo domain.UserRepo , hasher PasswordHasher) *UserService{
 
 func (s *UserService) Register(name , password string) error {
 
-	existing , _ := s.repo.GetByName(name)
+	existing , _ :=  s.repo.GetByName(name)
 	if existing != nil{
 		return  ErrUserAlreadyExists
 	}
