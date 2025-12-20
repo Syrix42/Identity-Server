@@ -14,12 +14,17 @@ import (
 func main() {
 	repo := memory.NewInMemoryRepository()
 	hasher  := crypto.NewBcryptHasher()
+	Comparer := crypto.NewBcryptComparer()
 	userService := app.NewUserService(repo , hasher)
+	loginservice := app.NewLoginService(repo , Comparer)
 	userHandler := httpHandler.NewUserHandler(userService)
+	loginhandler := httpHandler.NewLoginHandler(loginservice)
+
 
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/register",userHandler.Register)
+	mux.HandleFunc("/login", loginhandler.Login)
 	log.Println("Server listening on:8080")
 	log.Fatal(http.ListenAndServe(":8080",mux))
 	

@@ -11,3 +11,6 @@ func NewUser(Name string , hash string) User{
 		Password: hash,
 	}
 }
+
+
+func (u *User) CheckPassword()
