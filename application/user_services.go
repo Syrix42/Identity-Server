@@ -1,8 +1,10 @@
 package application
 
-
 import (
+	"context"
+
 	"github.com/alireza/identity/domain"
+	"github.com/google/uuid"
 )
 
 
@@ -16,15 +18,14 @@ func NewUserService(repo domain.UserRepo , hasher PasswordHasher) *UserService{
 	return  &UserService{repo: repo, hasher: hasher}
 }
 
-func (s *UserService) Register(name , password string) error {
-
-	existing , _ :=  s.repo.GetByName(name)
+func (s *UserService) Register(ctx context.Context, name , password string , role string) error {
+	existing , _ :=  s.repo.GetByName(ctx ,name)
 	if existing != nil{
 		return  ErrUserAlreadyExists
 	}
-	user := domain.NewUser(name , password)
-	user.Password , _ = s.hasher.Hash(user.Password)
-	err :=  s.repo.Save(user)
+	user := domain.NewUser(uuid.NewString(), name , password , role)
+	user.Password , _ = s.hasher.Hash(ctx ,user.Password)
+	err :=  s.repo.Save(ctx , user)
 	if err != nil{
 		return  err
 	}

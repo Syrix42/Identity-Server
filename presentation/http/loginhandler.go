@@ -18,6 +18,7 @@ func NewLoginHandler(logservice *application.LoginSerivce) LoginHandler{
 }
 
 func (l *LoginHandler) Login(w http.ResponseWriter , r *http.Request){
+	ctx := r.Context()
 	if r.Method != http.MethodPost{
 		http.Error(w, "Method Not Allowed",http.StatusMethodNotAllowed)
 		return
@@ -27,11 +28,11 @@ func (l *LoginHandler) Login(w http.ResponseWriter , r *http.Request){
 		http.Error(w, "InvalidJson" , http.StatusBadRequest)
 		return
 	} 
-	 err := l.LogService.Login(req.Name , req.Password)
+	 accessToken , recoveryToken , err := l.LogService.Login(ctx ,req.Name , req.Password)
 	if err != nil{
 		switch {
 		case errors.Is(err , application.ErrUserNotFound):
-			    respond := NewLoginResponse(false , "User Not Found")
+			    respond := NewLoginResponse(false , "User Not Found", "" , "")
 				w.Header().Set("Content/Type" , "application/json")
 				w.WriteHeader(http.StatusCreated)
 				if err:= json.NewEncoder(w).Encode(&respond) ; err!= nil{
@@ -39,7 +40,7 @@ func (l *LoginHandler) Login(w http.ResponseWriter , r *http.Request){
 					return
 				}
 			default:
-				respond := NewLoginResponse(false , "Invalid Password")
+				respond := NewLoginResponse(false , "Invalid Password" , "" , "")
 				w.Header().Set("Content/Type" , "application/ json")
 				w.WriteHeader(http.StatusCreated)
 				if err:= json.NewEncoder(w).Encode(&respond) ; err!= nil{
@@ -52,7 +53,7 @@ func (l *LoginHandler) Login(w http.ResponseWriter , r *http.Request){
 	}
 
 	
-		respond := NewLoginResponse(true , "")
+		respond := NewLoginResponse(true , "" , accessToken , recoveryToken )
 		w.Header().Set("Content/Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		if err := json.NewEncoder(w).Encode(&respond); err!=nil{

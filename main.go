@@ -8,17 +8,20 @@ import (
 	httpHandler "github.com/alireza/identity/presentation/http"
 	"github.com/alireza/identity/infra/memory"
 	"github.com/alireza/identity/infra/crypto"
+	"github.com/joho/godotenv"
 )
 
 
 func main() {
-	repo := memory.NewInMemoryRepository()
-	hasher  := crypto.NewBcryptHasher()
-	Comparer := crypto.NewBcryptComparer()
-	userService := app.NewUserService(repo , hasher)
-	loginservice := app.NewLoginService(repo , Comparer)
-	userHandler := httpHandler.NewUserHandler(userService)
-	loginhandler := httpHandler.NewLoginHandler(loginservice)
+
+	godotenv.Load(".env")
+	repo := memory.NewInMemoryRepository() //infra
+	hasher  := crypto.NewBcryptHasher()   // infra 
+	Comparer := crypto.NewBcryptComparer() // infra 
+	userService := app.NewUserService(repo , hasher) // application 
+	loginservice := app.NewLoginService(repo , Comparer) // application 
+	userHandler := httpHandler.NewUserHandler(userService) // presentaion
+	loginhandler := httpHandler.NewLoginHandler(loginservice) // presentaion 
 
 
 	mux := http.NewServeMux()

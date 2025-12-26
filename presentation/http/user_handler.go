@@ -2,8 +2,9 @@ package http
 
 import (
 	"encoding/json"
-	"net/http"
 	"errors"
+	"net/http"
+
 	"github.com/alireza/identity/application"
 )
 
@@ -18,13 +19,14 @@ func NewUserHandler (service *application.UserService) *UserHandler{
 }
 
 func (h *UserHandler) Register(w http.ResponseWriter , r *http.Request){
+	ctx := r.Context()
 	if r.Method != http.MethodPost{
 		http.Error(w, "Method not allowed" , http.StatusMethodNotAllowed)
 		return
 	}
 
 	var req struct {
-		Name     string `json:"name"`
+		Name     string `json:"username"`
 		Password string `json:"password"`
 	}
 
@@ -32,8 +34,7 @@ func (h *UserHandler) Register(w http.ResponseWriter , r *http.Request){
 		http.Error(w, "Invalid json" , http.StatusBadRequest)
 		return
 	}
-	
-	err :=  h.services.Register(req.Name , req.Password)
+	err :=  h.services.Register(ctx ,req.Name , req.Password , "Normal User")
 	if err != nil{
 		switch {
 		case errors.Is(err , application.ErrUserAlreadyExists):

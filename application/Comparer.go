@@ -1,6 +1,7 @@
-package application
+package application 
 
+import "context"
 
 type Comparer interface {
-    Compare(hashed string, plaintext string) error
+	Compare(ctx context.Context , hashed string, plaintext string) error
 }

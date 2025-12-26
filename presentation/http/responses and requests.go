@@ -17,7 +17,7 @@ func NewRegistrationResponse(sucess bool , Messege string , Data any)Registratio
 }
 
 type LoginRequest struct{
-	Name string `json:"Name"`
+	Name string `json:"username"`
 	Password string `json:"Password"`
 }
 func NewLoginRequest ()LoginRequest{
@@ -30,12 +30,16 @@ func NewLoginRequest ()LoginRequest{
 type LoginResponse struct{
 	Success bool `json:"success"`
 	Messege string `json:"Messege"`
+	JWTRecoveryToken  string `json:"jwtRecoveryToken"`
+	JWTAccessToken    string `json:"jwtAccessToken"`
 
 }
 
-func NewLoginResponse(sucess bool , messege string) LoginResponse{
+func NewLoginResponse(sucess bool , messege string , accessToken , recoveryToken string) LoginResponse{
 	return LoginResponse{
 		Success: sucess,
 		Messege: messege,
+		JWTAccessToken: accessToken,
+		JWTRecoveryToken: recoveryToken,
 	}
 }
