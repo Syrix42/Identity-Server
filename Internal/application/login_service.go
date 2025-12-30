@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/alireza/identity/domain"
-	"github.com/alireza/identity/infra/tokens"
+	"github.com/alireza/identity/internal/domain"
+	"github.com/alireza/identity/internal/infra/tokens"
 	"github.com/google/uuid"
 )
 

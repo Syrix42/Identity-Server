@@ -4,10 +4,10 @@ import (
 	"log"
 	"net/http"
 
-	app "github.com/alireza/identity/application"
-	httpHandler "github.com/alireza/identity/presentation/http"
-	"github.com/alireza/identity/infra/memory"
-	"github.com/alireza/identity/infra/crypto"
+	app "github.com/alireza/identity/internal/application"
+	httpHandler "github.com/alireza/identity/internal/presentation/http"
+	"github.com/alireza/identity/internal/infra/memory"
+	"github.com/alireza/identity/internal/infra/crypto"
 	"github.com/joho/godotenv"
 )
 

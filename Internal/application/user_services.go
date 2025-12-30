@@ -3,7 +3,7 @@ package application
 import (
 	"context"
 
-	"github.com/alireza/identity/domain"
+	"github.com/alireza/identity/internal/domain"
 	"github.com/google/uuid"
 )
 

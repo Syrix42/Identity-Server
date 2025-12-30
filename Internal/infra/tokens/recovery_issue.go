@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/rsa"
 
-	"github.com/alireza/identity/domain"
+	"github.com/alireza/identity/internal/domain"
 	"github.com/golang-jwt/jwt/v5"
 )
 

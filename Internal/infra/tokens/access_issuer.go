@@ -3,9 +3,8 @@ package tokens
 import (
 	"context"
 	"crypto/rsa"
-	"fmt"
 
-	"github.com/alireza/identity/domain"
+	"github.com/alireza/identity/internal/domain"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -32,8 +31,6 @@ func  IssueAccessToken(ctx context.Context, token domain.Token , privateKey *rsa
 			ID: token.ID, 
         },
     }
-	fmt.Println("Subject")
-	fmt.Println(claims.Subject)
     accesstoken := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
     return accesstoken.SignedString(privateKey)
 }

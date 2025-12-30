@@ -3,7 +3,7 @@ package http
 import (
 	"net/http"
 	"encoding/json"
-	"github.com/alireza/identity/application"
+	"github.com/alireza/identity/internal/application"
 	"errors"
 )
 

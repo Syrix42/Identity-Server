@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/alireza/identity/application"
+	"github.com/alireza/identity/internal/application"
 )
 
 
