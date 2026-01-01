@@ -3,7 +3,7 @@ package domain
 import "errors"
 
 type User struct {
-	userID   string
+	UserID   string
 	UserName string
 	Password string
 	Role     string
@@ -12,7 +12,7 @@ type User struct {
 
 func NewUser(UserID string, Name string, password string, Role string) User {
 	return User{
-		userID:   UserID,
+		UserID:   UserID,
 		UserName: Name,
 		Password: password,
 		Role:     Role,
@@ -20,7 +20,7 @@ func NewUser(UserID string, Name string, password string, Role string) User {
 }
 
 func (u *User) ID() string {
-	return u.userID
+	return u.UserID
 }
 
 func (u *User) Username() string {
