@@ -43,3 +43,13 @@ func NewLoginResponse(sucess bool , messege string , accessToken , recoveryToken
 		JWTRecoveryToken: recoveryToken,
 	}
 }
+
+type TokenRevocationRequest struct{
+	RefreshToken string `json:"refreshToken"`
+}
+
+func NewTokenRevocationRequest() TokenRevocationRequest{
+	return TokenRevocationRequest{
+		RefreshToken: "",
+	}
+}
