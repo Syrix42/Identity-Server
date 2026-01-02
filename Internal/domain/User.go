@@ -1,21 +1,24 @@
-package domain 
+package domain
 
 import "errors"
 
+var ErrCanNotAuthenticate = errors.New("To many Active Sessions")
+
 type User struct {
-	UserID   string
-	UserName string
-	Password string
-	Role     string
-	sessions []*Session
+	UserID        string
+	UserName      string
+	Password      string
+	Role          string
+	ActiveSession int
 }
 
 func NewUser(UserID string, Name string, password string, Role string) User {
 	return User{
-		UserID:   UserID,
-		UserName: Name,
-		Password: password,
-		Role:     Role,
+		UserID:        UserID,
+		UserName:      Name,
+		Password:      password,
+		Role:          Role,
+		ActiveSession: 1,
 	}
 }
 
@@ -27,43 +30,13 @@ func (u *User) Username() string {
 	return u.UserName
 }
 
-func (u *User) GetRole() string{
+func (u *User) GetRole() string {
 	return u.Role
 }
 
-func (u *User) Sessions() []*Session {
-	copies := make([]*Session, len(u.sessions))
-	copy(copies, u.sessions)
-	return copies
-}
-
-func (u *User) AddSession(s *Session) {
-	u.sessions = append(u.sessions, s)
-}
-
-func (u *User) GetSession(SessionId sessionID) (Session, error) {
-	for _, s := range u.sessions {
-		if s.id == SessionId {
-			return *s, nil
-		}
+func (u *User) CanAuthenticate() error {
+	if u.ActiveSession >= 5 {
+		return ErrCanNotAuthenticate
 	}
-	return Session{} , errors.New("session not found ")
-}
-
-
-func (u *User) DeactivateSession(sessionID sessionID) error {
-    s, err := u.GetSession(sessionID)
-    if err != nil {
-        return err
-    }
-    s.Deactivate()
-    return nil
-}
-func (u *User) ActivateSession(sessionID sessionID) error {
-    s, err := u.GetSession(sessionID)
-    if err != nil {
-        return err
-    }
-    s.Activate()
-    return nil
+	return nil
 }

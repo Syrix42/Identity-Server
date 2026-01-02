@@ -1,4 +1,4 @@
-package application
+package application 
 
 import (
 	"context"
@@ -27,9 +27,17 @@ func (l *LoginSerivce) Login(ctx  context.Context ,UserName , Password string ) 
 	if existing == nil{
 		return "" , "" , ErrUserNotFound
 	}
+	if err := existing.CanAuthenticate(); err!=nil{
+		return "" , "" , ErrCanNotAuthenticate
+	}
+
 	err := l.Comparer.Compare(ctx , existing.Password , Password)
 	if err!= nil{
 		return  "" , "" , err
+	}
+	err = l.Repo.IncrementActiveSessions(existing.UserID)
+	if err!= nil{
+		return "" , "" , err
 	}
 	accessToken := domain.NewAcessToken(uuid.NewString(),existing.ID(), domain.Access ,time.Now().UTC(), existing.Role)
 	recoveryToken := domain.NewRecoveryToken(uuid.NewString(),existing.ID(), domain.Recovery , time.Now().UTC())
@@ -48,8 +56,6 @@ func (l *LoginSerivce) Login(ctx  context.Context ,UserName , Password string ) 
 	if err!= nil{
 		return "" , "" , err
 	}
-	newSession := domain.NewSession(uuid.NewString(),recoveryToken.ID)
-	existing.AddSession(newSession)
 
 
 

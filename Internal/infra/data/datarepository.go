@@ -16,6 +16,7 @@ type UserDb struct {
 	Password  string    `db:"hashed_password"`
 	Role      string    `db:"role"`
 	CreatedAt time.Time `db:"created_at"`
+	ActiveUsers int       `db:"active_sessions"`
 }
 
 type MySQlDB struct{}
@@ -34,7 +35,7 @@ func (m *MySQlDB) Save(ctx context.Context, u domain.User) error {
 		CreatedAt: time.Now().UTC(),
 		Role:      u.Role,
 	}
-	query := "INSERT INTO users (username , hashed_password , created_at , role, user_id) VALUES (:username,:hashed_password, :created_at, :role, :user_id)"
+	query := "INSERT INTO users (username , hashed_password , created_at , role, user_id , active_sessions) VALUES (:username,:hashed_password, :created_at, :role, :user_id, :active_sessions)"
 	_, err := db.NamedExec(query, user)
 	if err != nil {
 		fmt.Println(err)
@@ -49,19 +50,63 @@ func (m *MySQlDB) GetByName(ctx context.Context, name string) (*domain.User, err
 	query := "SELECT * FROM users WHERE username = ?"
 	err := db.Get(&user, query, name)
 	if err != nil {
-		//fmt.Println(err)
+	
 		return nil, err
 		
 	}
 	return &domain.User{
 		UserName: user.Username,
-		UserID:   user.Id,
+		UserID:   user.UserId,
 		Password: user.Password,
 		Role:     user.Role,
+		ActiveSession: user.ActiveUsers,
 	} , nil
 	
 }
 
 func (m *MySQlDB) GetById(ctx context.Context, id string) (*domain.User, error) {
-	return &domain.User{}, nil
+	user := UserDb{}
+	db := database.GetDB()
+	query := "SELECT * FROM users WHERE user_id = ?"
+	err := db.Get(&user , query , id)
+	if err!=nil{
+		return nil , err
+	}
+	return &domain.User{
+		UserName: user.Username,
+		Password: user.Password,
+		UserID: user.UserId,
+		Role: user.Role,
+		ActiveSession: user.ActiveUsers,
+	} , nil
+
+}
+
+func (m *MySQlDB) IncrementActiveSessions(userID string) error {
+	fmt.Println(userID)
+	db := database.GetDB()
+	query := "UPDATE users SET active_sessions = active_sessions + 1 WHERE user_id = ?"
+	_, err := db.Exec(query, userID)
+
+	if err!= nil{
+		fmt.Println(err)
+		return  err
+	}
+	return nil
+}
+
+func (m *MySQlDB) DecrementActiveSessions(userID string) error {
+	
+	
+	db := database.GetDB()
+	query := "UPDATE users SET active_sessions = active_sessions - 1 WHERE user_id = ?"
+	_, err := db.Exec(query, userID)
+	if err!=nil{
+		
+		return err
+	}
+	res, err := db.Exec(query, userID)
+    rows, _ := res.RowsAffected()
+    fmt.Println("Rows affected:", rows)
+	return nil 
 }

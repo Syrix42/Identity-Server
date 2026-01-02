@@ -39,6 +39,14 @@ func (l *LoginHandler) Login(w http.ResponseWriter , r *http.Request){
 					http.Error(w, "Internal Server Error" , http.StatusInternalServerError)
 					return
 				}
+		case errors.Is(err , application.ErrCanNotAuthenticate):
+				respond := NewLoginResponse(false , "To many Active Sessions" , "" , "")
+				w.Header().Set("Content/Type" , "application/json")
+				w.WriteHeader(http.StatusCreated)
+				if err:= json.NewEncoder(w).Encode(&respond) ; err!= nil{
+					http.Error(w, "Internal Server Error" , http.StatusInternalServerError)
+					return
+				}
 			default:
 				respond := NewLoginResponse(false , "Invalid Password" , "" , "")
 				w.Header().Set("Content/Type" , "application/ json")
@@ -47,6 +55,7 @@ func (l *LoginHandler) Login(w http.ResponseWriter , r *http.Request){
 					http.Error(w, "Internal Server Error" , http.StatusInternalServerError)
 					return
 				}
+				return
 
 
 		}
