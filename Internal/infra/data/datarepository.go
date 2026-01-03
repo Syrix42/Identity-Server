@@ -38,7 +38,7 @@ func (m *MySQlDB) Save(ctx context.Context, u domain.User) error {
 	query := "INSERT INTO users (username , hashed_password , created_at , role, user_id , active_sessions) VALUES (:username,:hashed_password, :created_at, :role, :user_id, :active_sessions)"
 	_, err := db.NamedExec(query, user)
 	if err != nil {
-		fmt.Println(err)
+
 		return err
 	}
 	return nil
@@ -105,8 +105,5 @@ func (m *MySQlDB) DecrementActiveSessions(userID string) error {
 		
 		return err
 	}
-	res, err := db.Exec(query, userID)
-    rows, _ := res.RowsAffected()
-    fmt.Println("Rows affected:", rows)
 	return nil 
 }

@@ -17,6 +17,9 @@ func main() {
 	godotenv.Load(".env")
 	hasher:= crypto.NewBcryptHasher()   // infra 
 	Dbrepo := db.NewMYSQLDb()
+	Tokenrepo := db.NewTokenDataRepository() // infra
+	tokenRevocationService := app.NewTokenRevocationService(Tokenrepo , Dbrepo) // application
+	tokenRevocationHandler := httpHandler.NewTokenRevocationHandler(tokenRevocationService) // presentation
 	Comparer := crypto.NewBcryptComparer() // infra
 	userService := app.NewUserService(Dbrepo, hasher) // application 
 	loginservice := app.NewLoginService(Dbrepo, Comparer) // application 
@@ -28,6 +31,7 @@ func main() {
 
 	mux.HandleFunc("/register",userHandler.Register)
 	mux.HandleFunc("/login", loginhandler.Login)
+	mux.HandleFunc("/revocation", tokenRevocationHandler.RevokeToken)
 	log.Println("Server listening on:8080")
 	log.Fatal(http.ListenAndServe(":8080",mux))
 	

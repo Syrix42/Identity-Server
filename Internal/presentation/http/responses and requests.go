@@ -53,3 +53,20 @@ func NewTokenRevocationRequest() TokenRevocationRequest{
 		RefreshToken: "",
 	}
 }
+
+type TokenRevocationResponse struct{
+	Success bool `json:"success"`
+	Messege string `json:"Messege"`
+	JWTRecoveryToken  string `json:"jwtRecoveryToken"`
+	JWTAccessToken    string `json:"jwtAccessToken"`
+
+}
+
+func NewTokenRevocationResponse(sucess bool , messege string , accessToken , recoveryToken string) TokenRevocationResponse{
+	return TokenRevocationResponse{
+		Success: sucess,
+		Messege: messege,
+		JWTAccessToken: accessToken,
+		JWTRecoveryToken: recoveryToken,
+	}
+}

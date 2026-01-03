@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/alireza/identity/internal/application"
 	"errors"
+	"os"
 )
 
 type LoginHandler struct{
@@ -19,11 +20,12 @@ func NewLoginHandler(logservice *application.LoginSerivce) LoginHandler{
 
 func (l *LoginHandler) Login(w http.ResponseWriter , r *http.Request){
 	ctx := r.Context()
-	if r.Method != http.MethodPost{
-		http.Error(w, "Method Not Allowed",http.StatusMethodNotAllowed)
-		return
-	}
-	req := NewLoginRequest()
+	switch r.Method{
+	case http.MethodGet:
+		http.ServeFile(w , r , os.Getenv("LOGIN_PAGE"))
+	case http.MethodPost:
+
+		req := NewLoginRequest()
 	if err:= json.NewDecoder(r.Body).Decode(&req) ; err!=nil{
 		http.Error(w, "InvalidJson" , http.StatusBadRequest)
 		return
@@ -68,6 +70,10 @@ func (l *LoginHandler) Login(w http.ResponseWriter , r *http.Request){
 		if err := json.NewEncoder(w).Encode(&respond); err!=nil{
 			http.Error(w , "Internal Server Error" , http.StatusInternalServerError)
 		}
+	default:
+		http.Error(w , "Method not allowed", http.StatusMethodNotAllowed)
+	}
+	
 	}
 	
 	
