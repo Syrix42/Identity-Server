@@ -70,3 +70,25 @@ func NewTokenRevocationResponse(sucess bool , messege string , accessToken , rec
 		JWTRecoveryToken: recoveryToken,
 	}
 }
+
+
+type LogoutRequest struct{
+	RefreshToken string `json:"refreshToken"`
+}
+func NewLogoutRequest() LogoutRequest{
+	return LogoutRequest{
+		RefreshToken: "",
+	}
+}
+
+type LogoutResponse struct{
+	Success bool `json:"success"`
+	Messege string `json:"messege"`
+}
+
+func NewLogoutResponse(sucess bool , Messege string)LogoutResponse{
+	return LogoutResponse{
+		Success: sucess,
+		Messege: Messege,
+	}
+}

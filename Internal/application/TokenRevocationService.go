@@ -9,6 +9,7 @@ import (
 	"github.com/alireza/identity/internal/domain"
 	"github.com/alireza/identity/internal/infra/tokens"
 	"github.com/google/uuid"
+	"github.com/alireza/identity/internal/infra/revokedtoken"
 )
 
 
@@ -33,7 +34,14 @@ func (t *TokenRevocationService) RevokeToken(ctx context.Context, refreshToken s
 	if err != nil {
 		return "", "", err
 	}
-	isRevoked, err := t.repo.IsTokenRevoked(ctx ,claims.ID)
+	TableDate , err := revokedtoken.EnsureRevokedTokenTable(ctx , claims.IssuedAt.Time)
+	if err!=nil{
+		log.Fatal("Could not form the table")
+	}
+	if err!=nil{
+		return "" , "" , err
+	}
+	isRevoked, err := t.repo.IsTokenRevoked(ctx ,claims.ID, TableDate)
 	if err != nil{
 		return "" , "" , err	
 	}
@@ -41,7 +49,7 @@ func (t *TokenRevocationService) RevokeToken(ctx context.Context, refreshToken s
 		return "" , "" , ErrTokenAlreadyRevoked
 	}
 
-	t.repo.RevokeToken(ctx, claims.ID , claims.ExpiresAt.Time.UTC())
+	t.repo.RevokeToken(ctx, claims.ID , TableDate ,claims.ExpiresAt.Time.UTC())
 	path := PathLoader()
 	privateKey , err := LoadPrivateKey(path)
 	if err!= nil{

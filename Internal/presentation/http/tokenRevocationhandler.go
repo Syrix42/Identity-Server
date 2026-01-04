@@ -40,7 +40,7 @@ func (t *TokenRevocationHandler) RevokeToken(w http.ResponseWriter, r *http.Requ
 		w.Header().Set("Content-Type","application/json")
 		response := NewTokenRevocationResponse(false , "Token Already Revoked" , "" , "")
 		if err := json.NewEncoder(w).Encode(response);err!=nil{
-			http.Error(w, "Server Problem", http.StatusInternalServerError)
+			http.Error(w, "Internal Server Error ", http.StatusInternalServerError)
 			return
 		}
 		return
@@ -56,7 +56,7 @@ func (t *TokenRevocationHandler) RevokeToken(w http.ResponseWriter, r *http.Requ
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(response);err!=nil{
-		http.Error(w, "Server Problem", http.StatusInternalServerError)
+		http.Error(w, "Internal Server Error ", http.StatusInternalServerError)
 		return
 	}
 }

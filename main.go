@@ -1,14 +1,16 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 
 	app "github.com/alireza/identity/internal/application"
-	httpHandler "github.com/alireza/identity/internal/presentation/http"
-	db "github.com/alireza/identity/internal/infra/data"
 	"github.com/alireza/identity/internal/infra/crypto"
+	db "github.com/alireza/identity/internal/infra/data"
+	httpHandler "github.com/alireza/identity/internal/presentation/http"
 	"github.com/joho/godotenv"
+	"github.com/alireza/identity/internal/infra/revokedtoken"
 )
 
 
@@ -25,18 +27,21 @@ func main() {
 	loginservice := app.NewLoginService(Dbrepo, Comparer) // application 
 	userHandler := httpHandler.NewUserHandler(userService) // presentaion
 	loginhandler := httpHandler.NewLoginHandler(loginservice) // presentaion 
+	logoutService := app.NewLogOutService(Dbrepo ,Tokenrepo)
+	logoutHandler := httpHandler.NewLogoutHandler(logoutService)
 
+	ctx := context.Background()
+
+	revokedtoken.StartDailyCleanup(ctx , 7)
 
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/register",userHandler.Register)
 	mux.HandleFunc("/login", loginhandler.Login)
 	mux.HandleFunc("/revocation", tokenRevocationHandler.RevokeToken)
+	mux.HandleFunc("/logout" , logoutHandler.Logout)
 	log.Println("Server listening on:8080")
 	log.Fatal(http.ListenAndServe(":8080",mux))
 	
-
-
-
-
 }
+
